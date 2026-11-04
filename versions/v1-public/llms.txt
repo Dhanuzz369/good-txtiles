@@ -1,0 +1,38 @@
+# GoodBiz Apparels
+
+> Garment manufacturer and exporter in India. Supplies importers, brands and retailers with men's, women's and kids' clothing, either from ready stock or made to the buyer's design, size chart, fabric and GSM. 38 product lines, each with an 8 digit HSN code.
+
+## How to buy
+- [Ready stock garments](https://www.YOUR-DOMAIN.com/ready-stock-garments/): finished pieces, faster dispatch
+- [Made to order / private label](https://www.YOUR-DOMAIN.com/private-label-clothing-manufacturer/): your design, size chart and GSM, sample before bulk
+- [Send an enquiry](https://www.YOUR-DOMAIN.com/contact/)
+
+## Products
+- [Men's clothing](https://www.YOUR-DOMAIN.com/mens-clothing-manufacturer/)
+  - [Men's shirts](https://www.YOUR-DOMAIN.com/mens-clothing-manufacturer/shirts/): Men's cotton formal shirts (HSN 62052090); Men's cotton handloom shirts (HSN 62052010); Men's polyester shirts (HSN 62053090); Men's silk shirts (HSN 62059010)
+  - [Men's T shirts and polos](https://www.YOUR-DOMAIN.com/mens-clothing-manufacturer/t-shirts-polos/): Men's cotton T shirts (HSN 61091000); Men's polyester T shirts (HSN 61099010); Men's cotton polo shirts (HSN 61091000)
+  - [Men's trousers, jeans and shorts](https://www.YOUR-DOMAIN.com/mens-clothing-manufacturer/trousers-jeans-shorts/): Men's cotton trousers (HSN 62034290); Men's cotton jeans (HSN 62034290); Men's polyester trousers (HSN 62034300); Men's cotton shorts (HSN 62034290)
+  - [Men's jackets, blazers and suits](https://www.YOUR-DOMAIN.com/mens-clothing-manufacturer/jackets-blazers-suits/): Men's cotton jackets (HSN 62033200); Men's polyester jackets (HSN 62033300); Men's cotton blazers (HSN 62033200); Men's cotton suits (HSN 62031200)
+- [Women's clothing](https://www.YOUR-DOMAIN.com/womens-clothing-manufacturer/)
+  - [Women's blouses](https://www.YOUR-DOMAIN.com/womens-clothing-manufacturer/blouses/): Women's cotton blouses (HSN 62063090); Women's polyester blouses (HSN 62064000); Women's silk blouses (HSN 62061010)
+  - [Women's dresses and skirts](https://www.YOUR-DOMAIN.com/womens-clothing-manufacturer/dresses-skirts/): Women's cotton dresses (HSN 62044290); Women's polyester dresses (HSN 62044390); Women's cotton skirts (HSN 62045200)
+  - [Women's trousers, jeans, shorts and leggings](https://www.YOUR-DOMAIN.com/womens-clothing-manufacturer/trousers-jeans-leggings/): Women's cotton trousers (HSN 62046290); Women's polyester trousers (HSN 62046300); Women's cotton jeans (HSN 62046290); Women's cotton shorts (HSN 62046290); Women's cotton leggings (HSN 61046200)
+  - [Women's kurta sets and T shirts](https://www.YOUR-DOMAIN.com/womens-clothing-manufacturer/kurta-sets-t-shirts/): Women's cotton kurta sets (HSN 62114290); Women's cotton T shirts (HSN 61091000)
+  - [Women's jackets and blazers](https://www.YOUR-DOMAIN.com/womens-clothing-manufacturer/jackets-blazers/): Women's cotton jackets (HSN 62043200); Women's cotton blazers (HSN 62043200)
+- [Kids and baby clothing](https://www.YOUR-DOMAIN.com/kids-clothing-manufacturer/)
+  - [Baby clothes](https://www.YOUR-DOMAIN.com/kids-clothing-manufacturer/baby-clothes/): Baby cotton garments (HSN 62092000); Baby synthetic garments (HSN 62093000); Baby other textile garments (HSN 62099090)
+  - [Kids T shirts and shirts](https://www.YOUR-DOMAIN.com/kids-clothing-manufacturer/kids-t-shirts-shirts/): Kids cotton T shirts (HSN 61091000); Kids cotton shirts (HSN 62052090)
+  - [Girls' dresses and kids bottoms](https://www.YOUR-DOMAIN.com/kids-clothing-manufacturer/girls-dresses-kids-bottoms/): Girls cotton dresses (HSN 62044290); Boys cotton trousers (HSN 62034290); Kids cotton shorts (HSN 62034290 / 62046290)
+
+## Reference
+- [HSN codes for garments](https://www.YOUR-DOMAIN.com/hsn-codes-for-garments/)
+- [Fabric GSM guide for garment buyers](https://www.YOUR-DOMAIN.com/guides/garment-gsm-guide/)
+- [How to send a tech pack to a garment manufacturer](https://www.YOUR-DOMAIN.com/guides/how-to-send-a-tech-pack/)
+- [How to import garments from India](https://www.YOUR-DOMAIN.com/guides/importing-garments-from-india/)
+
+## Export markets
+- [United States](https://www.YOUR-DOMAIN.com/export/usa/)
+- [United Kingdom](https://www.YOUR-DOMAIN.com/export/uk/)
+- [European Union](https://www.YOUR-DOMAIN.com/export/europe/)
+- [UAE and GCC](https://www.YOUR-DOMAIN.com/export/uae/)
+- [Australia](https://www.YOUR-DOMAIN.com/export/australia/)
