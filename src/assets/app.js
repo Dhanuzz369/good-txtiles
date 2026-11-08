@@ -1,6 +1,8 @@
 /* GoodBiz Apparels — progressive enhancement. Every page works without JS;
    this adds the enquiry basket, catalogue filter, form handling and motion. */
 (() => {
+  // content already on screen stays visible instead of fading out and back in
+  document.querySelectorAll(".reveal").forEach((el) => { const r = el.getBoundingClientRect(); if (r.top < innerHeight && r.bottom > 0) el.classList.add("in"); });
   document.documentElement.classList.remove("no-js");
   const CFG = window.GB_CONFIG || {};
   const isSet = (v) => v && !/^\{\{.*\}\}$/.test(v);
@@ -182,14 +184,15 @@
       if (hint) hint.textContent = stock ? "Sizes, colours and fabric you are looking for in stock. All optional." : "All optional. Skip anything you are not sure of.";
     };
 
+    const stepIndex = (key) => steps.findIndex((s) => s.dataset.step === key);
     const renderSummary = () => {
       const rows = [
-        ["Contact", [val("name"), val("company"), val("email"), val("whatsapp")].filter(Boolean).join(" · "), 0],
-        ["Products", [...basket.map((p) => `${p.name} (HSN ${p.hsn})`), val("productOther")].filter(Boolean).join(", "), 1],
-        ["Buying route", radio("route"), 2],
-        ["Specification", [val("fabric"), val("sizes"), radio("techpack") && radio("route") !== "Ready stock" ? `Tech pack: ${radio("techpack")}` : ""].filter(Boolean).join(" · ") || "Not given", 3],
-        ["Quantity", quantity(), 4],
-        ["Destination", [val("country"), val("port"), radio("incoterm") ? `Price basis: ${radio("incoterm")}` : ""].filter(Boolean).join(" · "), 5],
+        ["Products", [...basket.map((p) => `${p.name} (HSN ${p.hsn})`), val("productOther")].filter(Boolean).join(", "), stepIndex("products")],
+        ["Buying route", radio("route"), stepIndex("route")],
+        ["Specification", [val("fabric"), val("sizes"), radio("techpack") && radio("route") !== "Ready stock" ? `Tech pack: ${radio("techpack")}` : ""].filter(Boolean).join(" · ") || "Not given", stepIndex("spec")],
+        ["Quantity", quantity(), stepIndex("quantity")],
+        ["Destination", [val("country"), val("port"), radio("incoterm") ? `Price basis: ${radio("incoterm")}` : ""].filter(Boolean).join(" · "), stepIndex("destination")],
+        ["Contact", [val("name"), val("company"), val("email"), val("whatsapp")].filter(Boolean).join(" · "), stepIndex("contact")],
       ];
       const dl = $("[data-summary]", form); dl.replaceChildren();
       rows.forEach(([k, v, s]) => {
@@ -394,6 +397,47 @@
     cards.forEach((c) => spy.observe(c));
   }
 
+  /* ---------- HSN code table search ---------- */
+  const hsnSearch = $("#hsn-search");
+  if (hsnSearch) {
+    const rows = $$(".hsn-table tr[data-search]");
+    hsnSearch.addEventListener("input", () => {
+      const q = hsnSearch.value.trim().toLowerCase(), qn = q.replace(/\s/g, "");
+      let n = 0;
+      rows.forEach((r) => { const hit = !q || r.dataset.search.includes(q) || r.dataset.search.replace(/\s/g, "").includes(qn); r.hidden = !hit; if (hit) n++; });
+      $$(".hsn-table tbody").forEach((tb) => { const g = $("tr.group", tb); if (g) g.hidden = !$$("tr[data-search]", tb).some((r) => !r.hidden); });
+      $("#hsn-empty").hidden = n > 0;
+    });
+  }
+
+  /* ---------- WebMCP: tools an AI agent can call on this page (W3C Community Group draft) ----------
+     Read-only search, and adding lines to the enquiry. Sending stays a human action in the form. */
+  const mc = document.modelContext ?? navigator.modelContext;
+  const CATALOGUE = CFG.products || [];
+  if (mc?.registerTool && CATALOGUE.length) {
+    const find = (q) => { const s = String(q || "").toLowerCase().trim(), sn = s.replace(/\s/g, ""); return CATALOGUE.filter((p) => { const h = `${p.name} ${p.hsn} ${p.family}`.toLowerCase(); return !s || h.includes(s) || h.replace(/\s/g, "").includes(sn); }); };
+    const text = (t) => ({ content: [{ type: "text", text: t }] });
+    try {
+      mc.registerTool({
+        name: "search_products",
+        description: "Search the GoodBiz Apparels export catalogue (knits, woven garments and jackets for men and kids) by product name, fabric or HSN code. Returns each matching line with its 8 digit HSN code and page URL.",
+        inputSchema: { type: "object", properties: { query: { type: "string", description: "Product name, fabric or HSN code, for example 'polo', 'denim' or '6205'. Empty returns every line." } } },
+        annotations: { readOnlyHint: true },
+        async execute({ query } = {}) { const r = find(query); return text(r.length ? r.map((p) => `${p.name} | HSN ${p.hsn} | ${location.origin}${p.url}`).join("\n") : "No matching product. Describe it in the enquiry form instead."); },
+      });
+      mc.registerTool({
+        name: "add_to_enquiry",
+        description: "Add catalogue lines to the visitor's enquiry basket on this site, by exact product name from search_products. Nothing is sent: the visitor reviews and sends the enquiry form themselves.",
+        inputSchema: { type: "object", properties: { products: { type: "array", items: { type: "string" }, description: "Exact product names, for example 'Men's cotton polo shirts'." } }, required: ["products"] },
+        async execute({ products = [] } = {}) {
+          const added = [];
+          products.forEach((n) => { const p = CATALOGUE.find((x) => x.name.toLowerCase() === String(n).toLowerCase()); if (p && !has(p.name)) { toggle({ name: p.name, hsn: p.hsn }); added.push(p.name); } });
+          return text(added.length ? `Added: ${added.join(", ")}. The visitor can review and send the enquiry at ${location.origin}/contact/#enquiry.` : "Nothing added. Use exact names from search_products.");
+        },
+      });
+    } catch {}
+  }
+
   /* ---------- products mega menu ---------- */
   const trigger = $(".nav-trigger"), mega = $("#mega");
   if (trigger && mega) {
@@ -464,8 +508,8 @@
 
   /* ---------- hero: pinned 3D orbit driven by scroll ---------- */
   const hero = $("[data-hero]");
-  if (hero && !reduceMotion && "IntersectionObserver" in window) {
-    hero.classList.add("live");
+  // the <html class="motion"> flag is set in <head> before first paint, so the CSS layout is already final
+  if (hero && document.documentElement.classList.contains("motion")) {
     const sticky = $(".hero3d-sticky", hero);
     const scene = $("[data-scene]", hero);
     const allOrbs = $$("[data-orb]", hero);
@@ -478,7 +522,19 @@
     const actions = $(".hero3d-foot .hero-actions", hero);
     const copy = $(".hero3d-copy", hero);
     const kicker = $(".hero-kicker", copy);
-    let orbs = [], W = 0, H = 0, mobile = false, ow = 160, oh = 200, slots = [];
+    let orbs = [], W = 0, H = 0, mobile = false, ow = 160, oh = 200, slots = [], head = null, dims = [], cx0 = 0, cy0 = 0;
+    // box around the opening headline (kicker + phase A/B), in stage coordinates
+    const headRect = () => {
+      const box = sticky.getBoundingClientRect();
+      let r = null;
+      [kicker, phases[0], phases[1]].filter(Boolean).forEach((e) => {
+        const range = document.createRange(); range.selectNodeContents(e);
+        const b = range.getBoundingClientRect();
+        if (!b.width) return;
+        r = r ? { l: Math.min(r.l, b.left), t: Math.min(r.t, b.top), r: Math.max(r.r, b.right), b: Math.max(r.b, b.bottom) } : { l: b.left, t: b.top, r: b.right, b: b.bottom };
+      });
+      return r && { cx: (r.l + r.r) / 2 - box.left, cy: (r.t + r.b) / 2 - box.top, w: r.r - r.l, h: r.b - r.t };
+    };
     let target = 0, cur = 0, vel = 0, spin = 0, last = performance.now();
     let mx = 0, my = 0, cmx = 0, cmy = 0, running = false;
 
@@ -548,6 +604,9 @@
       W = innerWidth; H = sticky.clientHeight; mobile = W < 760;
       orbs = allOrbs.filter((o) => getComputedStyle(o).display !== "none");
       ow = orbs[0]?.offsetWidth || 160; oh = orbs[0]?.offsetHeight || 200;
+      cx0 = orbs[0] ? orbs[0].offsetLeft + ow / 2 : W / 2; cy0 = orbs[0] ? orbs[0].offsetTop + oh / 2 : H / 2;
+      head = headRect();
+      dims = orbs.map((_, i) => dims[i] ?? 1);
       buildSlots();
     };
     const measure = () => {
@@ -582,14 +641,21 @@
         let ry = Math.sin(th) * 30;
         const t = slots[i];
         const depth = (Math.cos(th) + 1) / 2;
+        // a garment passing behind the opening headline fades right down so the words stay readable
+        let behind = false;
+        if (head) {
+          const k = 1400 / Math.max(400, 1400 - z);
+          behind = Math.abs(cx0 + x * k - head.cx) < head.w / 2 + ow * 0.32 * k && Math.abs(cy0 + y * k - head.cy) < head.h / 2 + oh * 0.32 * k;
+        }
+        dims[i] += ((behind ? 0.1 : 1) - dims[i]) * Math.min(1, dt * 10);
         let s = 1, rz = 0, op;
         if (t) {
           x += (t.x - x) * settle; y += (t.y - y) * settle; z += (0 - z) * settle; ry *= 1 - settle;
           s = 1 + (t.s - 1) * settle; rz = t.rot * settle;
-          op = (0.38 + 0.62 * depth) * (1 - settle) + settle;
+          op = (0.38 + 0.62 * depth) * dims[i] * (1 - settle) + settle;
         } else {
           // no free cell on this screen size: fade out instead of parking behind the headline
-          s = 1 - 0.4 * settle; op = (0.38 + 0.62 * depth) * (1 - settle);
+          s = 1 - 0.4 * settle; op = (0.38 + 0.62 * depth) * dims[i] * (1 - settle);
         }
         orbs[i].style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,${z.toFixed(1)}px) rotateY(${ry.toFixed(1)}deg) rotateZ(${rz.toFixed(2)}deg) scale(${s.toFixed(3)})`;
         orbs[i].style.opacity = op.toFixed(3);
@@ -598,12 +664,13 @@
       if (lead) lead.style.opacity = (1 - ss(0.45, 0.6, p)).toFixed(3);
       if (kicker) kicker.style.opacity = (1 - ss(0.44, 0.56, p)).toFixed(3);
 
-      const ina = ss(0.14, 0.24, p), inb = ss(0.18, 0.28, p), outb = ss(0.38, 0.48, p), inc = ss(0.46, 0.6, p);
+      // short cross-fades, so each line spends most of the scroll sharp and readable
+      const ina = ss(0.12, 0.2, p), inb = ss(0.16, 0.24, p), outb = ss(0.4, 0.46, p), inc = ss(0.44, 0.52, p);
       [[1 - ina, -ina], [inb * (1 - outb), (1 - inb) - outb], [inc, 1 - inc]].forEach(([o, off], k) => {
         if (!phases[k]) return;
         phases[k].style.opacity = o.toFixed(3);
-        phases[k].style.transform = `translateY(${(off * 70).toFixed(1)}px)`;
-        phases[k].style.filter = o < 0.98 ? `blur(${((1 - o) * 8).toFixed(1)}px)` : "none";
+        phases[k].style.transform = `translateY(${(off * 60).toFixed(1)}px)`;
+        phases[k].style.filter = o < 0.95 ? `blur(${((1 - o) * 4).toFixed(1)}px)` : "none";
       });
       if (meter) meter.style.transform = `scaleX(${p.toFixed(4)})`;
       const step = p < 0.2 ? 0 : p < 0.46 ? 1 : 2;

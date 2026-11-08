@@ -66,7 +66,7 @@ The site has not launched, so the old women's and men's/kids' URLs need no redir
 - JSON-LD: `Organization` site wide; `WebSite` (home); `BreadcrumbList` (all inner pages); `ItemList` (category and family pages); `Service` (pillars); `Article` (guides); `FAQPage` (pages with FAQs); `AboutPage`, `ContactPage`.
   - No `Product` schema: without price/offers/reviews it produces Search Console warnings and no rich result. Add it later only if you publish prices.
   - Google stopped showing FAQ rich results for most sites, but FAQPage markup still structures question and answer content for AI engines. It costs nothing.
-- `sitemap.xml` (30 URLs, lastmod), `robots.txt` (allows GPTBot, OAI-SearchBot, PerplexityBot, ClaudeBot, Google-Extended; blocks `/lp/`), `llms.txt` (a site summary for AI engines).
+- `sitemap.xml` (30 URLs, lastmod), `robots.txt` (allows GPTBot, OAI-SearchBot, PerplexityBot, ClaudeBot, Google-Extended, with a Content-Signal line; `/lp/` stays crawlable so its noindex is seen), `llms.txt` (a site summary for AI engines).
 - Internal linking: footer link hub on every page; family pages link to siblings, category, GSM guide and markets; guides link to HSN hub and pillars; home links to every pillar and family.
 - Images compressed to ≤ 1200 px (2.2 MB total); lazy loading below the fold; hero image `fetchpriority="high"`.
 - Mobile checked at 390 px with no sideways scrolling.
@@ -77,7 +77,7 @@ The site has not launched, so the old women's and men's/kids' URLs need no redir
 2. **Tables for facts.** HSN codes, GSM ranges, documents and spec options are in HTML tables, which AI engines quote reliably.
 3. **Entity consistency.** Use the same company name, city, IEC and description everywhere: site, Google Business Profile, LinkedIn, IndiaMART, Alibaba, Kompass, Europages, trade fair listings. AI engines check claims against these sources.
 4. **Fill the E-E-A-T gaps.** Fill the About page placeholders with the real factory, capacity, people, certifications and audits. Add real photos of your floor and products. These matter more for B2B trust than anything else on this list.
-5. **Freshness.** Update `SITE.updated` and rebuild when content changes. The date shows on guides and in the sitemap.
+5. **Freshness.** Update `SITE.updated` and rebuild when content changes. Production is described as partner factories in India; keep it consistent with goodbizglobal.com, LinkedIn and directory listings. The date shows on guides and in the sitemap.
 
 ## 6. Paid ads: `/lp/garment-manufacturer/`
 
@@ -120,13 +120,19 @@ No baseline data exists yet (new domain), so the targets below are milestones ra
 
 **Next guides to write:** cotton vs polyester for uniforms; denim weights explained; private label vs white label; how sampling works and what it costs; carton packing and ratio packing explained; garment inspection AQL explained; Incoterms for garment buyers in detail.
 
-## 10. Data points to check before launch
+## 10. HSN codes (corrected 2026-11-08)
 
-- **Baby garments, 6209.** Heading 6209 is babies' garments *not knitted*. Bodysuits and rompers in jersey or interlock are usually knitted, which is heading **6111**. Keep 6209 for woven babywear and check with your agent whether knitted baby lines need 6111.
+All 21 codes were checked against India's ITC-HS 8 digit tariff lines on 8 November 2026. Five were changed:
 
-- **Men's cotton polo shirts, 61091000.** Internationally, knitted shirts with a collar and buttoned placket (polos) are usually classified under heading **6105** (men's knitted shirts), not 6109 (T shirts). Cotton polos are commonly 61051010 or 61051090 in India.
+| Line | Was | Now | Why |
+|---|---|---|---|
+| Men's cotton polo shirts | 61091000 | 61051020 | A collar and buttoned placket make it a knit shirt (6105), not a T shirt (6109) |
+| Men's cotton jackets | 62033200 | 62013090 | Field, utility and wind jackets are heading 6201; 6203 is suit-type jackets and blazers |
+| Men's polyester jackets | 62033300 | 62014090 | Bombers, windcheaters and padded jackets are heading 6201 |
+| Men's silk shirts | 62059010 | 62059019 | 62059010 is not an 8 digit line; silk shirts sit in 6205 90 1x |
+| Baby cotton garments | 62092000 | 62092090 | 62092000 is not an 8 digit line; 6209 20 splits into 10 (handloom) and 90 (other) |
 
-The site shows the codes exactly as supplied. Confirm both with your customs agent and edit `src/data.mjs` if they change.
+"Kids cotton shirts" became "Boys cotton shirts" (6205 is men's and boys'; girls' shirts are 6206), and babywear is described as woven to match heading 6209. Polyester T shirts stay at 61099010 (6109 90 10 is synthetic fibres). Have your customs broker confirm the final list.
 
 ## 11. Not done (needs data or access)
 

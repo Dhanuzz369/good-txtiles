@@ -19,7 +19,7 @@
 
 const CONFIG = {
   SHEET_NAME: "Enquiries",
-  NOTIFY_EMAIL: "agro@goodbizglobal.com", // gets an email for every new enquiry; "" switches alerts off
+  NOTIFY_EMAIL: "clothing@goodbizglobal.com", // gets an email for every new enquiry; "" switches alerts off
   BRAND: "GoodBiz Apparels",
   STATUSES: ["New", "Replied", "Costing sent", "Sample", "Won", "Lost"],
 };
