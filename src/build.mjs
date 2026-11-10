@@ -83,15 +83,19 @@ const JS_URL = `/assets/v/app.${fp(JS)}.js`;
 const MOTION_JS = `(function(d){try{if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window)d.classList.add("motion")}catch(e){}})(document.documentElement)`;
 const CONFIG_JS = `window.GB_CONFIG=${JSON.stringify({ whatsapp: SITE.whatsapp, email: SITE.email, ads: SITE.adsConversion, endpoint: SITE.formEndpoint, products: ALL_PRODUCTS.map((p) => ({ name: p.name, hsn: p.hsn, family: p.family.name, url: prodUrl(p) })) }).replace(/</g, "\\u003c")}`;
 const GA_ID = SITE.ga4 || (SITE.adsConversion ? SITE.adsConversion.split("/")[0] : "");
-const GA_JS = GA_ID ? `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());${SITE.ga4 ? `gtag('config','${SITE.ga4}');` : ""}${SITE.adsConversion ? `gtag('config','${SITE.adsConversion.split("/")[0]}');` : ""}` : "";
+// Consent Mode v2: no analytics cookies for visitors in the EU/EEA, UK and Switzerland (Google sends
+// cookieless pings there); analytics cookies elsewhere. Ads storage stays off unless an Ads conversion is set.
+const CONSENT_REGIONS = ["AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE", "IS", "LI", "NO", "GB", "CH"];
+const ADS = SITE.adsConversion ? "granted" : "denied";
+const GA_JS = GA_ID ? `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',region:${JSON.stringify(CONSENT_REGIONS)}});gtag('consent','default',{ad_storage:'${ADS}',ad_user_data:'${ADS}',ad_personalization:'denied',analytics_storage:'granted'});gtag('js',new Date());${SITE.ga4 ? `gtag('config','${SITE.ga4}');` : ""}${SITE.adsConversion ? `gtag('config','${SITE.adsConversion.split("/")[0]}');` : ""}` : "";
 const sha = (s) => `'sha256-${createHash("sha256").update(s).digest("base64")}'`;
 const CSP = [
   "default-src 'self'",
-  `script-src 'self' ${sha(MOTION_JS)} ${sha(CONFIG_JS)}${GA_JS ? ` ${sha(GA_JS)} https://www.googletagmanager.com` : ""}`,
+  `script-src 'self' ${sha(MOTION_JS)} ${sha(CONFIG_JS)}${GA_JS ? ` ${sha(GA_JS)} https://*.googletagmanager.com` : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data:${GA_JS ? " https://*.google-analytics.com https://*.googletagmanager.com" : ""}`,
+  `img-src 'self' data:${GA_JS ? " https://*.google-analytics.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.google.com" : ""}`,
   "font-src 'self'",
-  `connect-src 'self' https://script.google.com https://script.googleusercontent.com${GA_JS ? " https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com" : ""}`,
+  `connect-src 'self' https://script.google.com https://script.googleusercontent.com${GA_JS ? " https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.google.com" : ""}`,
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -900,13 +904,13 @@ simple("/privacy/", "Privacy policy", "Privacy Policy | GoodBiz Apparels", "How 
 <p><strong>When you send an enquiry.</strong> The enquiry form asks for the products, buying route, specification, quantity, destination country and port, price basis and any notes, then your name, company, email and WhatsApp number. ${isSet(SITE.formEndpoint) ? "When you press Send, these details are stored in our enquiry sheet (Google Sheets) and we receive an email alert." : "When you press Send, the form opens your own email app or WhatsApp with the message written out; nothing reaches us until you send it there."} The page you sent it from and any campaign tags in the link are added so we know how you found us.</p>
 <p><strong>When you write, call or message us.</strong> We receive whatever you send by email, phone or WhatsApp.</p>
 <p><strong>In your browser.</strong> Products you add to an enquiry and your unfinished form answers are kept in your own browser storage so they survive a page change. They never leave your device unless you send the enquiry.</p>
-${SITE.ga4 ? "<p><strong>When you browse.</strong> Google Analytics records the pages you open, the site that sent you, your device and approximate location, and actions such as sending an enquiry.</p>" : "<p><strong>When you browse.</strong> This site sets no tracking cookies and runs no analytics.</p>"}
+${SITE.ga4 ? "<p><strong>When you browse.</strong> We use Google Analytics to understand which pages buyers find useful. It records the pages you open, the site that sent you, your device and approximate location, and actions such as sending an enquiry. Visitors in the EU, EEA, UK and Switzerland are measured without analytics cookies; elsewhere Google Analytics sets first party cookies (names starting with _ga). We do not use advertising or personalisation cookies.</p>" : "<p><strong>When you browse.</strong> This site sets no tracking cookies and runs no analytics.</p>"}
 <p>We do not ask for payment details, identity documents or any sensitive personal data.</p>
 <h2>Why we use it, and our legal basis</h2>
 <ul><li>To answer your enquiry, prepare a costing and, if you go ahead, handle the order. This is necessary to take steps at your request before entering a contract.</li><li>To keep the business records that Indian tax, customs and export rules require. This is a legal obligation.</li></ul>
 <p>We do not sell your data and we do not use it for advertising.</p>
 <h2>Who processes it</h2>
-<p>Enquiries are stored in Google Workspace (Google Sheets and Gmail), and WhatsApp messages are handled by WhatsApp. These providers may store data outside India and your country. We share order details with the partner factory, freight forwarder and customs broker handling your order only as far as the order needs.</p>
+<p>Enquiries are stored in Google Workspace (Google Sheets and Gmail)${SITE.ga4 ? ", site usage is measured with Google Analytics" : ""}, and WhatsApp messages are handled by WhatsApp. These providers may store data outside India and your country. We share order details with the partner factory, freight forwarder and customs broker handling your order only as far as the order needs.</p>
 <h2>How long we keep it</h2>
 <p>Enquiries that do not become orders are deleted when they are no longer useful, and in any case within three years. Order records are kept for as long as Indian tax and export law requires.</p>
 <h2>Your rights</h2>

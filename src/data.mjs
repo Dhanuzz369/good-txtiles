@@ -30,7 +30,7 @@ export const SITE = {
   payment: "{{payment terms}}",
   address: "Bengaluru, Karnataka, India",
   founded: "{{year founded}}",
-  ga4: "",               // e.g. G-XXXXXXX  (leave empty to disable)
+  ga4: "G-W9EYJH19WC",   // GA4 measurement ID (Google tag); linked to Search Console in GA admin. Empty disables analytics
   adsConversion: "",     // e.g. AW-123456789/AbCdEf (leave empty to disable)
   googleVerification: "", // Search Console HTML-tag token (content="..."), optional if verified by DNS
   bingVerification: "",   // Bing Webmaster Tools msvalidate.01 token, optional
